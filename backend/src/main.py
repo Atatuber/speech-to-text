@@ -1,19 +1,39 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from celery.result import AsyncResult
-from celery_app import background_task, celery_app
-
+from celery_app import celery_app, transcribe_given_audio
+from transcriber import sanitize_filename
+import os
+import shutil
 app = FastAPI()
+
+UPLOAD_DIR = "recordings/"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.get("/")
 async def root():
     return {"message": "FastAPI with Celery"}
 
-@app.post("/task/{x}/{y}")
-async def run_task(x: int, y: int):
-    task = background_task.delay(x, y)
-    return {"task_id": task.id, "status": "Task submitted"}
+@app.post("/upload/")
+async def upload_audio(file: UploadFile = File(...)):
+    sani_filename = sanitize_filename(file.filename)
 
-@app.get("/task/{task_id}")
-async def get_task_status(task_id: str):
+    file_path = f"{UPLOAD_DIR}{sani_filename}"
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    task = transcribe_given_audio.delay(file_path)
+
+    return { "task_id": task.id, "status": "Task submitted", "filename": sani_filename}
+
+@app.get("/upload/{task_id}")
+async def get_uploaded_audio_result(task_id: str):
     result = AsyncResult(task_id, app=celery_app)
+
     return {"task_id": task_id, "status": result.status, "result": result.result}
+
+
+    
+
+
+

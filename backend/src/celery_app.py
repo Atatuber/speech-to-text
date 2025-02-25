@@ -1,4 +1,5 @@
 from celery import Celery
+from transcriber import transcribe_audio
 
 celery_app = Celery(
     "worker",
@@ -7,5 +8,5 @@ celery_app = Celery(
 )
 
 @celery_app.task
-def background_task(x, y):
-    return x + y
+def transcribe_given_audio(audio):
+    return transcribe_audio(audio)
