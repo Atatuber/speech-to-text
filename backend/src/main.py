@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from celery.result import AsyncResult
 from celery_app import celery_app, transcribe_given_audio
 from transcriber import sanitize_filename
@@ -8,6 +9,17 @@ app = FastAPI()
 
 UPLOAD_DIR = "recordings/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+origins = ["http://localhost:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def root():
