@@ -5,6 +5,14 @@ from celery_app import celery_app, transcribe_given_audio
 from transcriber import sanitize_filename
 import os
 import shutil
+import re
+
+def sanitize_filename(filename: str) -> str:
+    filename = filename.strip()
+    filename = re.sub(r"\s+", "_", filename)  
+    filename = re.sub(r"[^a-zA-Z0-9_.-]", "", filename)
+    return filename.lower()
+
 app = FastAPI()
 
 UPLOAD_DIR = "recordings/"
