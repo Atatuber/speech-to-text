@@ -94,6 +94,17 @@ uvicorn main:app --reload
 
 ### Celery Worker
 
+WINDOWS:
+
+```bash
+cd backend
+source venv/bin/activate
+cd src
+celery -A celery_app worker --loglevel=info --pool=solo
+```
+
+LINUX:
+
 ```bash
 cd backend
 source venv/bin/activate
