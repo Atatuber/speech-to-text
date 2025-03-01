@@ -126,6 +126,7 @@ const TranscriptionApp = () => {
               setProgress={setProgress}
               setAudioURL={setAudioURL}
               setShowRecorder={setShowRecorder}
+              audioURL={audioURL}
             />
           )}
         </div>

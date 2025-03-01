@@ -11,8 +11,8 @@ export default function TranscribingProcess(props) {
     props.setProgress(0);
     props.setAudioURL("");
     props.setShowRecorder(false);
-    if (audioURL) {
-      URL.revokeObjectURL(audioURL);
+    if (props.audioURL) {
+      URL.revokeObjectURL(props.audioURL);
     }
   };
 

@@ -35,8 +35,6 @@ export default function TranscribeForm({
 
   const audioChunksRef = useRef([]);
 
-  console.log(isRecording);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {

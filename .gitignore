@@ -136,6 +136,8 @@ ENV/
 env.bak/
 venv.bak/
 
+backend/src/recordings/
+
 # Spyder project settings
 .spyderproject
 .spyproject
