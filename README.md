@@ -16,71 +16,100 @@ This application provides audio transcription services using OpenAI's Whisper mo
 - **Task Queue**: Celery with Redis
 - **Transcription**: OpenAI's Whisper model
 
-## Setup with Docker
+## Prerequisites
 
-### Prerequisites
-
-- Docker and Docker Compose installed
+- Node.js and npm
+- Python 3.8 or higher
+- Redis server (pre-installed on Arch Linux or available through package manager)
 - NVIDIA GPU with CUDA support (for optimal performance)
-- NVIDIA Container Toolkit installed (for GPU support)
 
-### Directory Structure
+## Setup Instructions
 
-```
-project/
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   ├── package.json
-│   └── Dockerfile
-├── backend/
-│   ├── src/
-│   │   └── recordings/
-│   ├── main.py
-│   ├── celery_app.py
-│   ├── transcriber.py
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── Dockerfile.worker
-└── docker-compose.yml
-```
+### Backend Setup
 
-### Running the Application
+1. Navigate to the backend directory:
 
-1. Clone the repository and navigate to the project directory.
+   ```bash
+   cd backend
+   ```
 
-2. Start the application using Docker Compose:
+2. Create a Python virtual environment:
+
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+
+   ```bash
+   source venv/bin/activate  # On Unix/Linux
+   # OR
+   venv\Scripts\activate  # On Windows
+   ```
+
+4. Install required Python packages:
+   ```bash
+   pip install whisper whisper-openai python-dotenv fastapi uvicorn celery redis
+   ```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+
+   ```bash
+   cd frontend
+   ```
+
+2. Install the required npm packages:
+   ```bash
+   npm i
+   ```
+
+## Running the Application
+
+You can start all components of the application using the provided bash script from the root directory:
 
 ```bash
-docker-compose up -d
+bash start-up.bash
 ```
 
-This will start all services:
+This script will:
 
-- Frontend on http://localhost:3000
-- Backend API on http://localhost:8000
-- Redis server on port 6379
-- Celery worker for processing transcription tasks
+- Start the FastAPI backend server
+- Initialize the Celery worker for processing transcription tasks
+- Launch the frontend development server
 
-3. To stop the application:
+Once everything is running, access the application at http://localhost:3000
+
+## Manual Startup (if not using the script)
+
+### Backend
 
 ```bash
-docker-compose down
+cd backend
+source venv/bin/activate
+cd src
+uvicorn main:app --reload
 ```
 
-## Usage
+### Celery Worker
 
-1. Open your browser and navigate to http://localhost:3000
-2. Upload an MP3 file or record audio directly in the browser
-3. Submit the audio for transcription
-4. Wait for the transcription to complete
-5. View the transcription results
+```bash
+cd backend
+source venv/bin/activate
+cd src
+celery -A celery_app worker --loglevel=info
+```
 
-### GPU Configuration
+### Frontend
 
-The Celery worker uses NVIDIA GPU support. Make sure you have the NVIDIA Container Toolkit installed and configured correctly for Docker.
+```bash
+cd frontend
+npm run dev
+```
 
 ## Troubleshooting
 
-- **Worker can't access GPU**: Ensure that NVIDIA Container Toolkit is properly installed and that your GPU is compatible with CUDA.
-- **Audio recording issues**: Check browser permissions for microphone access.
+- **Redis connection issues**: Make sure Redis server is running (`redis-server`)
+- **Worker can't access GPU**: Ensure that your CUDA drivers are properly installed
+- **Audio recording issues**: Check browser permissions for microphone access
